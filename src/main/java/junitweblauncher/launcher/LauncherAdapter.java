@@ -3,6 +3,6 @@ package junitweblauncher.launcher;
 import java.util.List;
 
 public interface LauncherAdapter {
-    List<TestMethod> listCases();
-    void runCases(List<TestMethod> testMethods);
+    List<TestMethod> listTestMethods(String packageName);
+    void runTestMethods(List<String> testMethods);
 }

@@ -2,6 +2,7 @@ package junitweblauncher.launcher;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.engine.TestDescriptor;
+import org.junit.platform.engine.discovery.DiscoverySelectors;
 import org.junit.platform.engine.discovery.MethodSelector;
 import org.junit.platform.launcher.Launcher;
 import org.junit.platform.launcher.LauncherDiscoveryRequest;
@@ -17,15 +18,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.platform.engine.discovery.DiscoverySelectors.selectMethod;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 
 @Slf4j
 public class LauncherAdapterImpl implements LauncherAdapter {
     @Override
-    public List<TestMethod> listCases() {
+    public List<TestMethod> listTestMethods(String packageName) {
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-                .selectors(selectPackage("example"))
+                .selectors(selectPackage(packageName))
                 .build();
 
         Launcher launcher = LauncherFactory.create();
@@ -38,8 +38,8 @@ public class LauncherAdapterImpl implements LauncherAdapter {
         return testMethods;
     }
 
-    public void runCases(List<TestMethod> testMethods) {
-        List<MethodSelector> methodSelectors = testMethods.stream().map(testMethod -> selectMethod(testMethod.fullyQualifiedMethodName())).toList();
+    public void runTestMethods(List<String> testMethods) {
+        List<MethodSelector> methodSelectors = testMethods.stream().map(DiscoverySelectors::selectMethod).toList();
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
                 .selectors(methodSelectors)
                 .build();

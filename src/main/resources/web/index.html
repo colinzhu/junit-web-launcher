@@ -1,39 +1,94 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="light">
+
 <head>
     <meta charset="UTF-8">
-    <title>Web Console</title>
+    <meta name="viewport" content="width=device-width, initial-scale=0.3, user-scalable=yes">
+    <title>JUnit Web Launcher</title>
+    <link rel="stylesheet" href="lib/pico.min.css"/>
+    <script defer src="lib/alpinejs.cdn.min.js"></script>
+    <script>
+        const protocol = location.protocol == "https:" ? "wss:" : "ws:";
+        const socket = new WebSocket(protocol + "//" + location.host);
+        socket.onmessage = event => {
+          const message = document.createElement("div");
+          message.textContent = event.data;
+          document.getElementById("messages").appendChild(message);
+        };
+        function sendMessage(event) {
+          event.preventDefault();
+          const input = document.getElementById("messageInput");
+          socket.send("startParams=" + input.value);
+          input.value = "";
+        };
+        function clearMessages() {
+          document.getElementById("messages").innerHTML = "";
+        }
+    </script>
 
+    <script src="main.js"></script>
     <style>
-        body {
-            font-family:  monospace;
+        .no-underline a {
+          text-decoration: none
+        }
+        dialog article {
+            max-width: 1000px;
+        }
+        :root {
+            --pico-font-size: 100%;
         }
     </style>
-    <script>
-      const protocol = location.protocol == "https:" ? "wss:" : "ws:";
-      const socket = new WebSocket(protocol + "//" + location.host);
-      socket.onmessage = event => {
-        const message = document.createElement("div");
-        message.textContent = event.data;
-        document.getElementById("messages").appendChild(message);
-      };
-      function sendMessage(event) {
-        event.preventDefault();
-        const input = document.getElementById("messageInput");
-        socket.send("startParams=" + input.value);
-        input.value = "";
-      };
-      function clearMessages() {
-        document.getElementById("messages").innerHTML = "";
-      }
-    </script>
 </head>
+
 <body>
-<form onsubmit="sendMessage(event)">
-    <input type="text" id="messageInput">
-    <button type="submit">Start</button>
-    <button onclick="javascript:clearMessages();return false;">Clear</button>
-</form>
-<div><pre id="messages" style="white-space:pre-wrap"></pre></div>
+
+<div class="container-fluid">
+    <nav>
+        <ul>
+            <li>
+                <h1>JUnit Web Launcher</h1>
+            </li>
+        </ul>
+        <ul>
+            <li><a role="button" href="../route-switcher.log" target="_blank">View Log File</a></li>
+        </ul>
+    </nav>
+</div>
+
+<div class="overflow-auto" x-data="testMethodData" @runTestMethods="runTestMethods" >
+    <div style="text-align:right;margin-right:1em">
+        <a role="button" @click.prevent="listTestMethods">List Test Methods</a>
+        <a role="button" @click.prevent="runTestMethods">Run Test Methods</a>
+    </div>
+    <div><input type="text" x-model="package" /></div>
+    <table class="striped">
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">className</th>
+            <th scope="col">methodName</th>
+            <th scope="col">fullyQualifiedMethodName</th>
+        </tr>
+        </thead>
+        <tbody>
+        <template x-for="item in testMethods">
+            <tr>
+                <td>
+                    <input type="checkbox" x-model="checkedTestMethods" x-bind:value="item.fullyQualifiedMethodName" />
+                </td>
+                <td x-text="item.className"></td>
+                <td x-text="item.methodName"></td>
+                <td x-text="item.fullyQualifiedMethodName"></td>
+            </tr>
+        </template>
+        </tbody>
+    </table>
+    <div style="margin:1em">checked: <span x-text="checkedTestMethods"></span></div>
+</div>
+
+<div style="padding:1rem;font-size:1rem">
+    <pre id="messages" style="white-space:pre-wrap"></pre>
+</div>
 </body>
+
 </html>

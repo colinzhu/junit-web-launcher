@@ -5,6 +5,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import junitweblauncher.launcher.LauncherAdapterImpl;
 import junitweblauncher.launcher.TestMethod;
@@ -30,16 +31,15 @@ public class WebVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.route().handler(StaticHandler.create("web"));
-
-        router.route("/listCases").handler(this::listCases);
-        router.route("/runCases").handler(this::runCases);
-//        router.route("/taskqueue/*").subRouter(new PaymentCreateHandler(vertx, pool, TaskQueueService.taskQueue(vertx)).get());
+        router.route().handler(BodyHandler.create());
+        router.route("/api/list-test-methods").handler(this::listTestMethods);
+        router.route("/api/run-test-methods").handler(this::runTestMethods);
 
         String logMsg = """
                 WebVerticle started, instance={}
                 http://localhost:#{port}/
-                http://localhost:#{port}/listCases
-                http://localhost:#{port}/runCases
+                http://localhost:#{port}/list-test-methods
+                http://localhost:#{port}/run-test-methods
                 """;
 
         server.requestHandler(router).listen(config().getInteger("port"))
@@ -47,16 +47,19 @@ public class WebVerticle extends AbstractVerticle {
                 .onFailure(err -> log.error("failed to start task queue support.", err));
     }
 
-    private void listCases(io.vertx.ext.web.RoutingContext routingContext) {
-        List<TestMethod> testMethods = new LauncherAdapterImpl().listCases();
+    private void listTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
+        // get the package name
+        List<String> packageName = routingContext.queryParam("package");
+        log.info("listTestMethods: package={}", packageName);
+        List<TestMethod> testMethods = new LauncherAdapterImpl().listTestMethods(!packageName.isEmpty() ? packageName.getFirst() : "");
         routingContext.response().putHeader("content-type", "application/json")
                 .end(Json.encodePrettily(testMethods));
     }
 
-    private void runCases(io.vertx.ext.web.RoutingContext routingContext) {
+    private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
         LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
-        List<TestMethod> testMethods = launcherAdapter.listCases();
-        launcherAdapter.runCases(testMethods);
+        List<String> testMethods = routingContext.body().asJsonObject().getJsonArray("testMethods").getList();
+        launcherAdapter.runTestMethods(testMethods);
 
         routingContext.response().putHeader("content-type", "application/json")
                 .end(Json.encodePrettily(Map.of("status", "ok")));
@@ -67,33 +70,5 @@ public class WebVerticle extends AbstractVerticle {
         vertx.eventBus().consumer(EVENT_ADDRESS, message -> {
             webSocket.writeTextMessage((String) message.body()); // redirect the message to websocket (web)
         });
-//        webSocket.textMessageHandler(this::onMessageReceived);
     }
-//
-//    private void onMessageReceived(String msg) {
-//        log.info("Message received: {}", msg);
-//        if (msg.startsWith("startParams=")) {
-//            if (isTaskRunning) {
-//                log.info("One task is still running, cannot trigger to run now.");
-//                return;
-//            }
-//            isTaskRunning = true;
-//            String[] params = msg.replace("startParams=", "").split(" ");
-//            vertx.executeBlocking(promise -> {
-//                try {
-//                    task.accept(params);
-//                } catch (Exception e) {
-//                    promise.fail(e);
-//                }
-//                promise.complete();
-//            }).onSuccess(v -> {
-//                log.info("executeBlock success");
-//                isTaskRunning = false;
-//            }).onFailure(err -> {
-//                log.error("executeBlock error", err);
-//                isTaskRunning = false;
-//            });
-//        }
-//    }
-
 }

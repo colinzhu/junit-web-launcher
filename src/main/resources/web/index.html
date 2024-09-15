@@ -58,13 +58,13 @@
 <div class="grid" x-data="testMethodData" @runTestMethods="runTestMethods">
     <form>
         <fieldset class="grid" style="padding:1em">
-            <input type="text" x-model="availableFilterKeyword" size="50" @input.debounce.200ms="filterAvailableTestMethods"/>
+            <input type="text" x-model="availableFilterKeyword" size="50" @input.debounce.200ms="filterAvailableTestMethods" placeholder="filter" />
             <input role="button" class="secondary" @click.prevent="addToSelectedTestMethods" value="Add" />
         </fieldset>
         <table class="striped">
             <thead>
             <tr>
-                <th scope="col"></th>
+                <th scope="col"><input type="checkbox" id="toggleAllAvailable" @change="toggleAllAvailableFilteredMethods($event.target.checked)" x-bind:checked="availableCheckedIds.length >0" /></th>
                 <th scope="col">className</th>
                 <th scope="col">methodName</th>
             </tr>
@@ -85,14 +85,14 @@
     </form>
     <form x-show="selectedTestMethods.length > 0" x-transition.duration.1000ms >
         <fieldset class="grid" style="padding:1em">
-            <input type="text" x-model="selectedFilterKeyword" size="50"  @input.debounce.200ms="filterSelectedTestMethods"/>
+            <input type="text" x-model="selectedFilterKeyword" size="50" @input.debounce.200ms="filterSelectedTestMethods" placeholder="filter"/>
             <input role="button" class="secondary" @click.prevent="removeFromSelectedTestMethods" value="Remove" />
-            <input role="button" @click.prevent="runTestMethods" value="Run Selected Methods" />
+            <input role="button" @click.prevent="runTestMethods" value="Run" />
         </fieldset>
         <table class="striped">
             <thead>
             <tr>
-                <th scope="col"></th>
+                <th scope="col"><input type="checkbox" id="toggleAllSelected" @change="toggleAllSelectedFilteredMethods($event.target.checked)"  x-bind:checked="selectedCheckedIds.length >0" /></th>
                 <th scope="col">className</th>
                 <th scope="col">methodName</th>
             </tr>

@@ -102,8 +102,25 @@ document.addEventListener('alpine:init', () => {
             const keywords = q.trim().split(/\s+/);
             console.log(keywords);
             return fullArray.filter(item => keywords.every(keyword => item['fullyQualifiedMethodName'].toLowerCase().indexOf(keyword.toLowerCase()) >= 0))
-        }
+        },
 
+        toggleAllAvailableFilteredMethods(isChecked) {
+            if (isChecked) {
+                this.availableCheckedIds = this.availableFilteredMethods.map(tm => tm['fullyQualifiedMethodName']);
+            } else {
+                this.availableCheckedIds = [];
+            }
+        },
+
+        toggleAllSelectedFilteredMethods(isChecked) {
+            if (isChecked) {
+                console.log("checked");
+                this.selectedCheckedIds = this.selectedFilteredMethods.map(tm => tm['fullyQualifiedMethodName']);
+            } else {
+                console.log("unchecked");
+                this.selectedCheckedIds = [];
+            }
+        }
     }))
 
 })

@@ -1,10 +1,15 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('testMethodData', () => ({
         package: '',
+        listType: '',
         availableTestMethods: [],
+        availableFilteredMethods: [],
+        availableFilterKeyword: '',
         availableCheckedIds: [],
 
         selectedTestMethods: [],
+        selectedFilteredMethods: [],
+        selectedFilterKeyword: '',
         selectedCheckedIds: [],
 
         async init() {
@@ -13,10 +18,14 @@ document.addEventListener('alpine:init', () => {
 
         async listTestMethods() {
             try {
-                this.package = new URLSearchParams(window.location.search).get('package') || 'example'; // 'example' is default
-                this.availableTestMethods = await (await fetch('api/list-test-methods?package=' + this.package)).json();
+                const urlSearchParams = new URLSearchParams(window.location.search);
+                this.package = urlSearchParams.get('package') || 'example'; // 'example' is default
+                this.listType = urlSearchParams.get('listType') || 'classes'; // 'classes' is default
+                this.availableTestMethods = await (await fetch('api/list-test-methods?package=' + this.package + '&listType=' + this.listType)).json();
+                this.availableFilteredMethods = this.availableTestMethods;
                 const url = new URL(window.location)
                 url.searchParams.set('package', this.package);
+                url.searchParams.set('listType', this.listType);
                 window.history.replaceState(null, '', url.toString())
             } catch (err) {
                 console.log("error loading test methods from: " + this.package, err)
@@ -44,12 +53,28 @@ document.addEventListener('alpine:init', () => {
         addToSelectedTestMethods() {
             if (this.availableCheckedIds.length > 0) {
                 [this.availableTestMethods, this.selectedTestMethods, this.availableCheckedIds] = this.moveFromTo(this.availableTestMethods, this.selectedTestMethods, this.availableCheckedIds);
+
+                this.availableFilteredMethods = this.availableTestMethods;
+                this.selectedFilteredMethods = this.selectedTestMethods; // reset the selected filtered list
+
+                this.availableFilterKeyword = '';
+                this.selectedFilterKeyword = '';
+                this.filterAvailableTestMethods(); // trigger to refresh the available filtered list
+                this.filterSelectedTestMethods(); // trigger to refresh the selected filtered list
             }
         },
 
         removeFromSelectedTestMethods() {
             if (this.selectedCheckedIds.length > 0) {
                 [this.selectedTestMethods, this.availableTestMethods, this.selectedCheckedIds] = this.moveFromTo(this.selectedTestMethods, this.availableTestMethods, this.selectedCheckedIds);
+
+                this.availableFilteredMethods = this.availableTestMethods;
+                this.selectedFilteredMethods = this.selectedTestMethods; // reset the selected filtered list
+
+                this.availableFilterKeyword = '';
+                this.selectedFilterKeyword = '';
+                this.filterAvailableTestMethods(); // trigger to refresh the available filtered list
+                this.filterSelectedTestMethods(); // trigger to refresh the selected filtered list
             }
         },
 
@@ -61,6 +86,22 @@ document.addEventListener('alpine:init', () => {
                 });
                 return [fromArray, toArray, []]
             }
+        },
+
+        filterAvailableTestMethods() {
+            this.availableFilteredMethods = this.search(this.availableTestMethods, this.availableFilterKeyword);
+            this.availableCheckedIds = [];
+        },
+
+        filterSelectedTestMethods() {
+            this.selectedFilteredMethods = this.search(this.selectedTestMethods, this.selectedFilterKeyword);
+            this.selectedCheckedIds = [];
+        },
+
+        search(fullArray, q) {
+            const keywords = q.trim().split(/\s+/);
+            console.log(keywords);
+            return fullArray.filter(item => keywords.every(keyword => item['fullyQualifiedMethodName'].toLowerCase().indexOf(keyword.toLowerCase()) >= 0))
         }
 
     }))

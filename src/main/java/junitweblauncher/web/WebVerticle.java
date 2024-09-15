@@ -8,7 +8,7 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
 import junitweblauncher.launcher.LauncherAdapterImpl;
-import junitweblauncher.launcher.TestMethod;
+import junitweblauncher.launcher.TestItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,10 +48,11 @@ public class WebVerticle extends AbstractVerticle {
     private void listTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
         // get the package name
         List<String> packageName = routingContext.queryParam("package");
+        List<String> listType = routingContext.queryParam("listType");
         log.info("listTestMethods: package={}", packageName);
-        List<TestMethod> testMethods = new LauncherAdapterImpl().listTestMethods(!packageName.isEmpty() ? packageName.getFirst() : "");
+        List<TestItem> testItems = new LauncherAdapterImpl().listTestItems(!packageName.isEmpty() ? packageName.getFirst() : "", !listType.isEmpty() ? listType.getFirst() : "classes");
         routingContext.response().putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(testMethods));
+                .end(Json.encodePrettily(testItems));
     }
 
     private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {

@@ -58,7 +58,7 @@
 <div class="grid" x-data="testMethodData" @runTestMethods="runTestMethods">
     <form>
         <fieldset class="grid" style="padding:1em">
-            <input type="text" x-model="package" size="50"/><input role="button" class="secondary" @click.prevent="listTestMethods" value="List Test Methods" />
+            <input type="text" x-model="availableFilterKeyword" size="50" @input.debounce.200ms="filterAvailableTestMethods"/>
             <input role="button" class="secondary" @click.prevent="addToSelectedTestMethods" value="Add" />
         </fieldset>
         <table class="striped">
@@ -70,7 +70,7 @@
             </tr>
             </thead>
             <tbody>
-            <template x-for="(item, index) in availableTestMethods">
+            <template x-for="(item, index) in availableFilteredMethods">
                 <tr>
                     <td>
                         <input type="checkbox" x-model="availableCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
@@ -81,10 +81,11 @@
             </template>
             </tbody>
         </table>
-        <div style="margin:1em">checked: <span x-text="availableCheckedIds.length"></span></div>
+        <div style="margin:1em">checked: <span x-text="availableCheckedIds"></span></div>
     </form>
-    <form>
+    <form x-show="selectedTestMethods.length > 0" x-transition.duration.1000ms >
         <fieldset class="grid" style="padding:1em">
+            <input type="text" x-model="selectedFilterKeyword" size="50"  @input.debounce.200ms="filterSelectedTestMethods"/>
             <input role="button" class="secondary" @click.prevent="removeFromSelectedTestMethods" value="Remove" />
             <input role="button" @click.prevent="runTestMethods" value="Run Selected Methods" />
         </fieldset>
@@ -97,7 +98,7 @@
             </tr>
             </thead>
             <tbody>
-            <template x-for="(item, index) in selectedTestMethods">
+            <template x-for="(item, index) in selectedFilteredMethods">
                 <tr>
                     <td>
                         <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>

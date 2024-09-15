@@ -38,8 +38,6 @@ public class WebVerticle extends AbstractVerticle {
         String logMsg = """
                 WebVerticle started, instance={}
                 http://localhost:#{port}/
-                http://localhost:#{port}/list-test-methods
-                http://localhost:#{port}/run-test-methods
                 """;
 
         server.requestHandler(router).listen(config().getInteger("port"))
@@ -66,7 +64,7 @@ public class WebVerticle extends AbstractVerticle {
     }
 
     private void onWebSocketConnected(ServerWebSocket webSocket) {
-        webSocket.writeTextMessage("Welcome to the web console!");
+        webSocket.writeTextMessage("Welcome to JUnit Web Launcher!");
         vertx.eventBus().consumer(EVENT_ADDRESS, message -> {
             webSocket.writeTextMessage((String) message.body()); // redirect the message to websocket (web)
         });

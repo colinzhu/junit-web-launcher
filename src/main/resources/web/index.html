@@ -55,35 +55,61 @@
     </nav>
 </div>
 
-<div class="overflow-auto" x-data="testMethodData" @runTestMethods="runTestMethods" >
-    <div style="text-align:right;margin-right:1em">
-        <a role="button" @click.prevent="listTestMethods">List Test Methods</a>
-        <a role="button" @click.prevent="runTestMethods">Run Test Methods</a>
-    </div>
-    <div><input type="text" x-model="package" /></div>
-    <table class="striped">
-        <thead>
-        <tr>
-            <th scope="col"></th>
-            <th scope="col">className</th>
-            <th scope="col">methodName</th>
-            <th scope="col">fullyQualifiedMethodName</th>
-        </tr>
-        </thead>
-        <tbody>
-        <template x-for="item in testMethods">
+<div class="grid" x-data="testMethodData" @runTestMethods="runTestMethods">
+    <form>
+        <fieldset class="grid" style="padding:1em">
+            <input type="text" x-model="package" size="50"/><input role="button" class="secondary" @click.prevent="listTestMethods" value="List Test Methods" />
+            <input role="button" class="secondary" @click.prevent="addToSelectedTestMethods" value="Add" />
+        </fieldset>
+        <table class="striped">
+            <thead>
             <tr>
-                <td>
-                    <input type="checkbox" x-model="checkedTestMethods" x-bind:value="item.fullyQualifiedMethodName" />
-                </td>
-                <td x-text="item.className"></td>
-                <td x-text="item.methodName"></td>
-                <td x-text="item.fullyQualifiedMethodName"></td>
+                <th scope="col"></th>
+                <th scope="col">className</th>
+                <th scope="col">methodName</th>
             </tr>
-        </template>
-        </tbody>
-    </table>
-    <div style="margin:1em">checked: <span x-text="checkedTestMethods"></span></div>
+            </thead>
+            <tbody>
+            <template x-for="(item, index) in availableTestMethods">
+                <tr>
+                    <td>
+                        <input type="checkbox" x-model="availableCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
+                    </td>
+                    <td x-text="item.className"></td>
+                    <td x-text="item.methodName"></td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+        <div style="margin:1em">checked: <span x-text="availableCheckedIds.length"></span></div>
+    </form>
+    <form>
+        <fieldset class="grid" style="padding:1em">
+            <input role="button" class="secondary" @click.prevent="removeFromSelectedTestMethods" value="Remove" />
+            <input role="button" @click.prevent="runTestMethods" value="Run Selected Methods" />
+        </fieldset>
+        <table class="striped">
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">className</th>
+                <th scope="col">methodName</th>
+            </tr>
+            </thead>
+            <tbody>
+            <template x-for="(item, index) in selectedTestMethods">
+                <tr>
+                    <td>
+                        <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
+                    </td>
+                    <td x-text="item.className"></td>
+                    <td x-text="item.methodName"></td>
+                </tr>
+            </template>
+            </tbody>
+        </table>
+        <div style="margin:1em">checked: <span x-text="selectedCheckedIds.length"></span></div>
+    </form>
 </div>
 
 <div style="padding:1rem;font-size:1rem">

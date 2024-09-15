@@ -58,12 +58,4 @@ public class SysOutToEventBus {
         // Redirect System.out to our custom PrintStream
         System.setOut(new PrintStream(messageQueueOutputStream, true));
     }
-
-    public static void main(String[] args) {
-        Vertx vertx = Vertx.vertx();
-        new SysOutToEventBus(vertx);
-
-        // Example output to System.out
-        vertx.setPeriodic(1000, id -> System.out.println("Hello, Web Console!"));
-    }
 }

@@ -58,7 +58,12 @@ public class WebVerticle extends AbstractVerticle {
     private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
         LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
         List<String> testMethods = routingContext.body().asJsonObject().getJsonArray("testMethods").getList();
-        launcherAdapter.runTestMethods(testMethods);
+        vertx.executeBlocking(() -> {
+                    launcherAdapter.runTestMethods(testMethods);
+                    return null;
+                })
+                .onSuccess(res -> log.info("test methods executed successfully"))
+                .onFailure(err -> log.error("failed to execute test methods", err));
 
         routingContext.response().putHeader("content-type", "application/json")
                 .end(Json.encodePrettily(Map.of("status", "ok")));

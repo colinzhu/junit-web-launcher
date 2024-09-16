@@ -11,14 +11,17 @@ public class LoggingMdcExtension implements BeforeTestExecutionCallback, AfterTe
     public void beforeTestExecution(ExtensionContext context) {
         String className = context.getRequiredTestClass().getSimpleName();
         String methodName = context.getRequiredTestMethod().getName();
+        String displayName = context.getDisplayName();
 
         MDC.put("testClass", className);
         MDC.put("testMethod", methodName);
+        MDC.put("testDisplayName", displayName);
     }
 
     @Override
     public void afterTestExecution(ExtensionContext context) {
         MDC.remove("testClass");
         MDC.remove("testMethod");
+        MDC.remove("testDisplayName");
     }
 }

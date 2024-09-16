@@ -13,7 +13,13 @@ import java.util.Map;
 public class App {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
-        vertx.deployVerticle(WebVerticle.class, new DeploymentOptions().setInstances(1).setConfig(new JsonObject(Map.of("port", 8080))));
+        int port = 0;
+        try {
+            port = Integer.parseInt(args[0]);
+        } catch (Exception e) {
+            log.warn("Port number is not provided, default random");
+        }
+        vertx.deployVerticle(WebVerticle.class, new DeploymentOptions().setInstances(1).setConfig(new JsonObject(Map.of("port", port))));
         new SysOutToEventBus(vertx);
     }
 

@@ -12,6 +12,7 @@ import junitweblauncher.launcher.TestItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public class WebVerticle extends AbstractVerticle {
         server.webSocketHandler(this::onWebSocketConnected);
 
         Router router = Router.router(vertx);
+        router.route("/log/*").handler(StaticHandler.create("./log").setDirectoryListing(true));
         router.route().handler(StaticHandler.create("web"));
         router.route().handler(BodyHandler.create());
         router.route("/api/list-test-methods").handler(this::listTestMethods);
@@ -58,6 +60,8 @@ public class WebVerticle extends AbstractVerticle {
     private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
         LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
         List<String> testMethods = routingContext.body().asJsonObject().getJsonArray("testMethods").getList();
+        String runId = Instant.now().toString().replace(":", "-");
+        System.setProperty("runId", runId);
         vertx.executeBlocking(() -> {
                     launcherAdapter.runTestMethods(testMethods);
                     return null;
@@ -66,7 +70,7 @@ public class WebVerticle extends AbstractVerticle {
                 .onFailure(err -> log.error("failed to execute test methods", err));
 
         routingContext.response().putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(Map.of("status", "ok")));
+                .end(Json.encodePrettily(Map.of("status", "ok", "runId", runId)));
     }
 
     private void onWebSocketConnected(ServerWebSocket webSocket) {

@@ -1,11 +1,27 @@
 <configuration>
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSSZZZZZ}][%-25thread][%-5level][%-30.30logger][%X{testClass}][%X{testMethod}][%X{testDisplayName}] - %msg %n</pattern>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSSZZZZZ}][%-25thread][%-5level][%-30.30logger][%X{testClass}][%X{testMethod}][%X{testDisplayName}] - %msg%n</pattern>
         </encoder>
     </appender>
 
+    <appender name="FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+        <discriminator>
+            <key>runId</key>
+            <defaultValue>launcher</defaultValue>
+        </discriminator>
+        <sift>
+            <appender name="FILE-${runId}" class="ch.qos.logback.core.FileAppender">
+                <file>log/${runId}.log</file>
+                <append>false</append>
+                <encoder>
+                    <pattern>[%d{yyyy-MM-dd HH:mm:ss.SSSZZZZZ}][%-25thread][%-5level][%-30.30logger][%X{testClass}][%X{testMethod}][%X{testDisplayName}] - %msg%n</pattern>
+                </encoder>
+            </appender>
+        </sift>
+    </appender>
     <root level="info">
-        <appender-ref ref="STDOUT" />
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
     </root>
 </configuration>

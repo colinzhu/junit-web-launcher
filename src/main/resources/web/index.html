@@ -50,67 +50,73 @@
             </li>
         </ul>
         <ul>
-            <li><a role="button" href="../route-switcher.log" target="_blank">View Log File</a></li>
+            <li><a role="button" href="./log/" target="_blank">View Log Files</a></li>
         </ul>
     </nav>
 </div>
 
 <div class="grid" x-data="testMethodData" @runTestMethods="runTestMethods">
-    <form>
-        <fieldset class="grid" style="padding:1em">
-            <input type="text" x-model="availableFilterKeyword" size="50" @input.debounce.200ms="filterAvailableTestMethods" placeholder="filter" />
-            <input role="button" class="secondary" @click.prevent="addToSelectedTestMethods" value="Add" />
-        </fieldset>
-        <table class="striped">
-            <thead>
-            <tr>
-                <th scope="col"><input type="checkbox" id="toggleAllAvailable" @change="toggleAllAvailableFilteredMethods($event.target.checked)" x-bind:checked="availableCheckedIds.length >0" /></th>
-                <th scope="col">className</th>
-                <th scope="col">methodName</th>
-            </tr>
-            </thead>
-            <tbody>
-            <template x-for="(item, index) in availableFilteredMethods">
+    <article>
+        <header><strong>Available Test Classes / Methods</strong></header>
+        <form>
+            <fieldset class="grid">
+                <input type="text" x-model="availableFilterKeyword" size="50" @input.debounce.200ms="filterAvailableTestMethods" placeholder="filter" />
+                <input type="button" class="secondary" @click.prevent="addToSelectedTestMethods" value="Add" />
+            </fieldset>
+            <table class="striped">
+                <thead>
                 <tr>
-                    <td>
-                        <input type="checkbox" x-model="availableCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
-                    </td>
-                    <td x-text="item.className"></td>
-                    <td x-text="item.methodName"></td>
+                    <th scope="col"><input type="checkbox" id="toggleAllAvailable" @change="toggleAllAvailableFilteredMethods($event.target.checked)" x-bind:checked="availableCheckedIds.length >0" /></th>
+                    <th scope="col">className</th>
+                    <th scope="col">methodName</th>
                 </tr>
-            </template>
-            </tbody>
-        </table>
-        <div style="margin:1em">checked: <span x-text="availableCheckedIds"></span></div>
-    </form>
-    <form x-show="selectedTestMethods.length > 0" x-transition.duration.1000ms >
-        <fieldset class="grid" style="padding:1em">
-            <input type="text" x-model="selectedFilterKeyword" size="50" @input.debounce.200ms="filterSelectedTestMethods" placeholder="filter"/>
-            <input role="button" class="secondary" @click.prevent="removeFromSelectedTestMethods" value="Remove" />
-            <input role="button" @click.prevent="runTestMethods" value="Run" />
-        </fieldset>
-        <table class="striped">
-            <thead>
-            <tr>
-                <th scope="col"><input type="checkbox" id="toggleAllSelected" @change="toggleAllSelectedFilteredMethods($event.target.checked)"  x-bind:checked="selectedCheckedIds.length >0" /></th>
-                <th scope="col">className</th>
-                <th scope="col">methodName</th>
-            </tr>
-            </thead>
-            <tbody>
-            <template x-for="(item, index) in selectedFilteredMethods">
+                </thead>
+                <tbody>
+                <template x-for="(item, index) in availableFilteredMethods">
+                    <tr>
+                        <td>
+                            <input type="checkbox" x-model="availableCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
+                        </td>
+                        <td x-text="item.className"></td>
+                        <td x-text="item.methodName"></td>
+                    </tr>
+                </template>
+                </tbody>
+            </table>
+        </form>
+    </article>
+    <article x-show="selectedTestMethods.length > 0" x-transition.duration.1000ms >
+        <header><strong>Selected Test Classes / Methods: <span x-text="selectedTestMethods.length"></span></strong></header>
+        <form>
+            <fieldset class="grid">
+                <input type="text" x-model="selectedFilterKeyword" size="50" @input.debounce.200ms="filterSelectedTestMethods" placeholder="filter" x-show="isEditMode" />
+                <input type="button" class="secondary" @click.prevent="isEditMode = true" value="Edit" x-show="!isEditMode" />
+                <input type="button" class="secondary" @click.prevent="removeFromSelectedTestMethods" value="Remove" x-show="isEditMode"/>
+                <input type="button" class="secondary" @click.prevent="isEditMode = false" value="Complete Editing" x-show="isEditMode" />
+                <input type="button" @click.prevent="runTestMethods" value="Run" />
+            </fieldset>
+            <table class="striped">
+                <thead>
                 <tr>
-                    <td>
-                        <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
-                    </td>
-                    <td x-text="item.className"></td>
-                    <td x-text="item.methodName"></td>
+                    <th scope="col"x-show="isEditMode"><input type="checkbox" id="toggleAllSelected" @change="toggleAllSelectedFilteredMethods($event.target.checked)"  x-bind:checked="selectedCheckedIds.length >0" /></th>
+                    <th scope="col">className</th>
+                    <th scope="col">methodName</th>
                 </tr>
-            </template>
-            </tbody>
-        </table>
-        <div style="margin:1em">checked: <span x-text="selectedCheckedIds.length"></span></div>
-    </form>
+                </thead>
+                <tbody>
+                <template x-for="(item, index) in selectedFilteredMethods">
+                    <tr>
+                        <td x-show="isEditMode">
+                            <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
+                        </td>
+                        <td x-text="item.className"></td>
+                        <td x-text="item.methodName"></td>
+                    </tr>
+                </template>
+                </tbody>
+            </table>
+        </form>
+    </article>
 </div>
 
 <div style="padding:1rem;font-size:1rem">

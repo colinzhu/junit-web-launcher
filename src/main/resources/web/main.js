@@ -7,6 +7,7 @@ document.addEventListener('alpine:init', () => {
         availableFilterKeyword: '',
         availableCheckedIds: [],
 
+        isEditMode: false,
         selectedTestMethods: [],
         selectedFilteredMethods: [],
         selectedFilterKeyword: '',

@@ -6,6 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
+@DisplayName("""
+        Given there is one message with message type ABC
+        When it's send to the service
+        Then the message should be saved in the service
+        """)
 public class TestClassB {
     @Test
     @DisplayName("****TestB_method1****")

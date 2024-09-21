@@ -68,7 +68,9 @@
                 <tr>
                     <th scope="col"><input type="checkbox" id="toggleAllAvailable" @change="toggleAllAvailableFilteredMethods($event.target.checked)" x-bind:checked="availableCheckedIds.length >0" /></th>
                     <th scope="col">className</th>
-                    <th scope="col">methodName</th>
+                    <th scope="col">classDisplayName</th>
+                    <th scope="col" x-show="'methods' == listType">methodName</th>
+                    <th scope="col" x-show="'methods' == listType">methodDisplayName</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -78,7 +80,9 @@
                             <input type="checkbox" x-model="availableCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
                         </td>
                         <td x-text="item.className"></td>
-                        <td x-text="item.methodName"></td>
+                        <td x-html="item.classDisplayName.replace(/\n/g, '<br/>')"></td>
+                        <td x-show="'methods' == listType" x-text="item.methodName"></td>
+                        <td x-show="'methods' == listType" x-text="item.methodDisplayName"></td>
                     </tr>
                 </template>
                 </tbody>
@@ -100,7 +104,9 @@
                 <tr>
                     <th scope="col"x-show="isEditMode"><input type="checkbox" id="toggleAllSelected" @change="toggleAllSelectedFilteredMethods($event.target.checked)"  x-bind:checked="selectedCheckedIds.length >0" /></th>
                     <th scope="col">className</th>
-                    <th scope="col">methodName</th>
+                    <th scope="col">classDisplayName</th>
+                    <th scope="col" x-show="'methods' == listType">methodName</th>
+                    <th scope="col" x-show="'methods' == listType">methodDisplayName</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -110,7 +116,9 @@
                             <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
                         </td>
                         <td x-text="item.className"></td>
-                        <td x-text="item.methodName"></td>
+                        <td x-html="item.classDisplayName.replace(/\n/g, '<br/>')"></td>
+                        <td x-show="'methods' == listType" x-text="item.methodName"></td>
+                        <td x-show="'methods' == listType" x-text="item.methodDisplayName"></td>
                     </tr>
                 </template>
                 </tbody>

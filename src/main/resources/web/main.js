@@ -23,6 +23,7 @@ document.addEventListener('alpine:init', () => {
                 this.package = urlSearchParams.get('package') || 'example'; // 'example' is default
                 this.listType = urlSearchParams.get('listType') || 'classes'; // 'classes' is default
                 this.availableTestMethods = await (await fetch('api/list-test-methods?package=' + this.package + '&listType=' + this.listType)).json();
+                console.log(this.availableTestMethods)
                 this.availableFilteredMethods = this.availableTestMethods;
                 const url = new URL(window.location)
                 url.searchParams.set('package', this.package);

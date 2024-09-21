@@ -1,5 +1,5 @@
 package junitweblauncher.launcher;
 
-public record TestItem(String className, String methodName, String fullyQualifiedMethodName) {
+public record TestItem(String className, String methodName, String classDisplayName, String methodDisplayName, String fullyQualifiedMethodName) {
 
 }

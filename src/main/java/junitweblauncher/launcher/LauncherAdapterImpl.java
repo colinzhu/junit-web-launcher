@@ -11,9 +11,10 @@ import org.junit.platform.launcher.TestIdentifier;
 import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
-import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -42,7 +43,7 @@ public class LauncherAdapterImpl implements LauncherAdapter {
         return testItems;
     }
 
-    public void runTestMethods(List<String> fullyQualifiedNames) {
+    public RunReport runTestMethods(List<String> fullyQualifiedNames) {
         List<MethodSelector> methodSelectors = fullyQualifiedNames.stream().filter(i -> i.contains("#")).map(DiscoverySelectors::selectMethod).toList();
         List<ClassSelector> classSelectors = fullyQualifiedNames.stream().filter(i -> !i.contains("#")).map(DiscoverySelectors::selectClass).toList();
         LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
@@ -50,16 +51,24 @@ public class LauncherAdapterImpl implements LauncherAdapter {
                 .selectors(classSelectors)
                 .build();
 
-        SummaryGeneratingListener summaryGeneratingListener = new SummaryGeneratingListener();
+        ReportListener reportListener = new ReportListener();
         Launcher launcher = LauncherFactory.create();
-        launcher.execute(request, summaryGeneratingListener);
+        launcher.execute(request, reportListener);
 
-        TestExecutionSummary summary = summaryGeneratingListener.getSummary();
-        System.out.println("Total tests: " + summary.getTestsFoundCount());
+        String summary = prepareSummary(reportListener.getSummary());
+        return new RunReport(reportListener.getRunId(), summary, reportListener.getRunTestItems());
+    }
+
+    private static String prepareSummary(TestExecutionSummary summary) {
         summary.getFailures().forEach(failure -> {
-            System.out.println("Failure: " + failure.getTestIdentifier().getDisplayName());
-            System.out.println("  Reason: " + failure.getException().getMessage());
+            TestItem testItem = testIdentifierToTestMethod(null, failure.getTestIdentifier());
+            log.error("[{}][{}][{}] Failed:", testItem.className(), testItem.methodName(), testItem.methodDisplayName(), failure.getException());
         });
+        StringWriter stringWriter = new StringWriter();
+        summary.printTo(new PrintWriter(stringWriter));
+
+        log.info("\n{}", stringWriter);
+        return stringWriter.toString();
     }
 
     private static void listTestMethods(List<TestItem> testItems, TestPlan testPlan, TestIdentifier parent) {
@@ -68,7 +77,7 @@ public class LauncherAdapterImpl implements LauncherAdapter {
                 listTestMethods(testItems, testPlan, child);
             } else {
                 log.info("Found testMethods: {}_{}", child.getType(), child.getUniqueId());
-                testItems.add(testIdentifierToTestMethod(child));
+                testItems.add(testIdentifierToTestMethod(parent.getDisplayName(), child)); // when listing methods, put parent display name (class display name)
             }
         });
     }
@@ -79,7 +88,7 @@ public class LauncherAdapterImpl implements LauncherAdapter {
                 listTestClasses(testItems, testPlan, child);
             } else {
                 log.info("Found testClasses: {}_{}", child.getType(), child.getUniqueId());
-                testItems.add(testIdentifierToTestMethod(child));
+                testItems.add(testIdentifierToTestClass(child));
             }
         });
     }
@@ -95,14 +104,20 @@ public class LauncherAdapterImpl implements LauncherAdapter {
                 && child.getUniqueIdObject().getSegments().stream().anyMatch(s -> s.getType().equals("class"));
     }
 
-    private static TestItem testIdentifierToTestMethod(TestIdentifier testId) {
+    private static TestItem testIdentifierToTestMethod(String parentDisplayName, TestIdentifier testId) {
         Map<String, String> segments = new HashMap<>();
         testId.getUniqueIdObject().getSegments().stream()
                 .filter(segment -> List.of("class", "method", "test-template").contains(segment.getType()))
                 .forEach(segment -> segments.put(segment.getType(), segment.getValue()));
         String className = segments.get("class");
         String methodName = segments.get("method") == null ? segments.get("test-template") : segments.get("method");
-        return new TestItem(className, methodName, Stream.of(className, methodName).filter(Objects::nonNull).collect(Collectors.joining("#")));
+        String itemDisplayName = testId.getDisplayName();
+        return new TestItem(className, methodName, parentDisplayName, itemDisplayName, Stream.of(className, methodName).filter(Objects::nonNull).collect(Collectors.joining("#")));
+    }
+
+    private static TestItem testIdentifierToTestClass(TestIdentifier testId) {
+        String className = TestUtils.getTestClass(testId);
+        return new TestItem(className, null, testId.getDisplayName(), null, className);
     }
 
 

@@ -62,15 +62,19 @@ public class WebVerticle extends AbstractVerticle {
         List<String> testMethods = routingContext.body().asJsonObject().getJsonArray("testMethods").getList();
         String runId = Instant.now().toString().replace(":", "-");
         System.setProperty("runId", runId);
-        vertx.executeBlocking(() -> {
-                    launcherAdapter.runTestMethods(testMethods);
-                    return null;
+        vertx.executeBlocking(() -> launcherAdapter.runTestMethods(testMethods))
+                .onSuccess(res -> {
+                    log.info("test methods executed successfully");
+                    routingContext.response().putHeader("content-type", "application/json")
+                            .end(Json.encodePrettily(Map.of("status", "ok", "runId", runId, "report", res)));
                 })
-                .onSuccess(res -> log.info("test methods executed successfully"))
-                .onFailure(err -> log.error("failed to execute test methods", err));
+                .onFailure(err -> {
+                    log.error("failed to execute test methods", err);
+                    routingContext.response().putHeader("content-type", "application/json")
+                            .setStatusCode(500)
+                            .end(Json.encodePrettily(Map.of("status", "error", "runId", runId, "message", err.getMessage())));
 
-        routingContext.response().putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(Map.of("status", "ok", "runId", runId)));
+                });
     }
 
     private void onWebSocketConnected(ServerWebSocket webSocket) {

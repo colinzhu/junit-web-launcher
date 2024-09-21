@@ -3,7 +3,7 @@ package junitweblauncher.launcher;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.launcher.TestIdentifier;
 
-public class TestUtils {
+class TestUtils {
     static String getTestClass(TestIdentifier testId) {
         return testId.getUniqueIdObject().getSegments().stream()
                 .filter(segment -> "class".equals(segment.getType()))

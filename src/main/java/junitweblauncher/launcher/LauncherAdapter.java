@@ -25,4 +25,8 @@ public interface LauncherAdapter {
         private String status;
         private Throwable exception;
     }
+
+    record TestItem(String className, String methodName, String classDisplayName, String methodDisplayName, String fullyQualifiedMethodName) {
+
+    }
 }

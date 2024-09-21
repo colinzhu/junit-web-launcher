@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class ReportListener implements TestExecutionListener {
+class ReportListener implements TestExecutionListener {
 
     private final SummaryGeneratingListener summaryGeneratingListener;
 

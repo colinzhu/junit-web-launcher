@@ -7,8 +7,8 @@ import io.vertx.core.json.Json;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.StaticHandler;
+import junitweblauncher.launcher.LauncherAdapter;
 import junitweblauncher.launcher.LauncherAdapterImpl;
-import junitweblauncher.launcher.TestItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebVerticle extends AbstractVerticle {
     private static final String EVENT_ADDRESS = "console_messages_created";
-
+    LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
     @Override
     public void start() {
         startHttpServer();
@@ -52,13 +52,12 @@ public class WebVerticle extends AbstractVerticle {
         List<String> packageName = routingContext.queryParam("package");
         List<String> listType = routingContext.queryParam("listType");
         log.info("listTestMethods: package={}", packageName);
-        List<TestItem> testItems = new LauncherAdapterImpl().listTestItems(!packageName.isEmpty() ? packageName.getFirst() : "", !listType.isEmpty() ? listType.getFirst() : "classes");
+        List<LauncherAdapter.TestItem> testItems = new LauncherAdapterImpl().listTestItems(!packageName.isEmpty() ? packageName.getFirst() : "", !listType.isEmpty() ? listType.getFirst() : "classes");
         routingContext.response().putHeader("content-type", "application/json")
                 .end(Json.encodePrettily(testItems));
     }
 
     private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
-        LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
         List<String> testMethods = routingContext.body().asJsonObject().getJsonArray("testMethods").getList();
         String runId = Instant.now().toString().replace(":", "-");
         System.setProperty("runId", runId);

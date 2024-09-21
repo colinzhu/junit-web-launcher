@@ -23,6 +23,7 @@ public interface LauncherAdapter {
         private long endTime;
         private String status;
         private Throwable exception;
+        private String stackTrace;
     }
 
     record TestItem(String className, String methodName, String classDisplayName, String methodDisplayName,

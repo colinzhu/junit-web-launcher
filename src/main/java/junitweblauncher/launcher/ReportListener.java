@@ -10,6 +10,8 @@ import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +62,7 @@ class ReportListener implements TestExecutionListener {
         summaryGeneratingListener.executionStarted(id);
         if (id.isTest()) {
             LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(TestUtils.getTestClass(id), TestUtils.getInvocationOrMethodName(id),
-                    System.currentTimeMillis(), 0, "STARTED", null);
+                    System.currentTimeMillis(), 0, "STARTED", null, null);
             runTestItems.put(id.getUniqueId(), runReportItem);
         }
     }
@@ -73,6 +75,12 @@ class ReportListener implements TestExecutionListener {
             runReportItem.setEndTime(System.currentTimeMillis());
             runReportItem.setStatus(testExecutionResult.getStatus().name());
             runReportItem.setException(testExecutionResult.getThrowable().orElse(null));
+            runReportItem.setStackTrace(testExecutionResult.getThrowable().map(e -> {
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                e.printStackTrace(pw);
+                return sw.toString();
+            }).orElse(null));
         }
     }
 

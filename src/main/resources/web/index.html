@@ -128,31 +128,37 @@
         </article>
     </div>
     <template x-if="report">
-        <article x-show="report">
+        <article>
             <header><strong>Report</strong></header>
             <table class="striped">
                 <thead>
                 <tr>
-                    <th scope="col">className</th>
-                    <th scope="col">methodName</th>
-                    <th scope="col">time (ms)</th>
-                    <th scope="col">status</th>
-                    <th scope="col">exception</th>
+                    <th>className</th>
+                    <th>methodName</th>
+                    <th>time (ms)</th>
+                    <th>status</th>
+                    <th>exception</th>
                 </tr>
                 </thead>
-                <tbody>
-                <template x-for="(item, index) in report.runReportItems">
-                    <tr>
-                        <td x-text="item.className"></td>
-                        <td x-text="item.methodName"></td>
-                        <td x-text="item.endTime - item.startTime"></td>
-                        <td x-html="item.status"></td>
-                        <td x-text="item.exception ? item.exception.message : ''"></td>
-                    </tr>
-                </template>
-                </tbody>
+
+                    <template x-for="(item, index) in report.runReportItems">
+                        <tbody>
+                            <tr>
+                                <td x-text="item.className"></td>
+                                <td x-text="item.methodName"></td>
+                                <td x-text="item.endTime - item.startTime"></td>
+                                <td x-html="item.status"></td>
+                                <td x-text="item.exception ? item.exception.message : ''"></td>
+                            </tr>
+                            <template x-if="item.exception">
+                                <tr>
+                                    <td colspan="5"><pre x-text="item.stackTrace" style="background-color:transparent" /></td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </template>
             </table>
-            <div x-html="report.summary.replace(/\n/g, '<br/>')"></div>
+            <pre x-text="report ? report.summary : ''" style="background-color:transparent"></pre>
         </article>
     </template>
 </div>

@@ -56,7 +56,7 @@ public class LauncherAdapterImpl implements LauncherAdapter {
         launcher.execute(request, reportListener);
 
         String summary = prepareSummary(reportListener.getSummary());
-        return new RunReport(reportListener.getRunId(), summary, reportListener.getRunTestItems());
+        return new RunReport(reportListener.getRunId(), summary, reportListener.getRunTestItems().values().stream().toList());
     }
 
     private static String prepareSummary(TestExecutionSummary summary) {

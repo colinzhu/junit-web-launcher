@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
-import java.util.Map;
 
 public interface LauncherAdapter {
     List<TestItem> listTestItems(String packageName, String listType);
 
     RunReport runTestMethods(List<String> testMethods);
 
-    record RunReport(String runId, String summary, Map<String, RunReportItem> runReportItems) {
+    record RunReport(String runId, String summary, List<RunReportItem> runReportItems) {
 
     }
 
@@ -26,7 +25,8 @@ public interface LauncherAdapter {
         private Throwable exception;
     }
 
-    record TestItem(String className, String methodName, String classDisplayName, String methodDisplayName, String fullyQualifiedMethodName) {
+    record TestItem(String className, String methodName, String classDisplayName, String methodDisplayName,
+                    String fullyQualifiedMethodName) {
 
     }
 }

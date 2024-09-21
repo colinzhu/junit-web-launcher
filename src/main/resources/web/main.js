@@ -13,6 +13,9 @@ document.addEventListener('alpine:init', () => {
         selectedFilterKeyword: '',
         selectedCheckedIds: [],
 
+        isRunning: false,
+        report: null,
+
         async init() {
             this.listTestMethods();
         },
@@ -36,6 +39,8 @@ document.addEventListener('alpine:init', () => {
 
         async runTestMethods() {
             try {
+                this.isRunning = true;
+                this.report = null;
                 const response = await fetch('api/run-test-methods', {
                     method: 'POST',
                     headers: {
@@ -45,10 +50,12 @@ document.addEventListener('alpine:init', () => {
                         testMethods: this.selectedTestMethods.map(tm => tm['fullyQualifiedMethodName'])
                     })
                 })
-                const data = await response.json();
-                console.log(data)
+                this.report = await response.json();
+                console.log(this.report)
+                this.isRunning = false;
             } catch (err) {
                 console.log("error running test methods: " + err)
+                this.isRunning = false;
             }
         },
 

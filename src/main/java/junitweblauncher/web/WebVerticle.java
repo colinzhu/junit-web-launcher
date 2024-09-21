@@ -65,7 +65,7 @@ public class WebVerticle extends AbstractVerticle {
                 .onSuccess(res -> {
                     log.info("test methods executed successfully");
                     routingContext.response().putHeader("content-type", "application/json")
-                            .end(Json.encodePrettily(Map.of("status", "ok", "runId", runId, "report", res)));
+                            .end(Json.encodePrettily(res));
                 })
                 .onFailure(err -> {
                     log.error("failed to execute test methods", err);

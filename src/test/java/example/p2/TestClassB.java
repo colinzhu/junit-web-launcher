@@ -1,5 +1,6 @@
 package example.p2;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +21,9 @@ public class TestClassB {
     }
 
     @Test
+    @SneakyThrows
     public void testB_method2() {
+        Thread.sleep(2123);
         log.info("this is TestClassB.testB_method2");
         Assertions.assertTrue(true);
     }

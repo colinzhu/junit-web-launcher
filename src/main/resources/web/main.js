@@ -23,10 +23,16 @@ document.addEventListener('alpine:init', () => {
         async listTestMethods() {
             try {
                 const urlSearchParams = new URLSearchParams(window.location.search);
-                this.package = urlSearchParams.get('package') || 'example'; // 'example' is default
+                this.package = urlSearchParams.get('package') || null;
                 this.listType = urlSearchParams.get('listType') || 'classes'; // 'classes' is default
-                this.availableTestMethods = await (await fetch('api/list-test-methods?package=' + this.package + '&listType=' + this.listType)).json();
-                console.log(this.availableTestMethods)
+                var requestUrl = 'api/list-test-methods?listType=' + this.listType;
+                if (this.package) {
+                    requestUrl = 'api/list-test-methods?package=' + this.package + '&listType=' + this.listType;
+                }
+                const resp = await (await fetch(requestUrl)).json();
+                this.availableTestMethods = resp.availableTestItems;
+                this.package = resp.package; // get package from response
+                console.log("this.availableTestMethods", this.availableTestMethods)
                 this.availableFilteredMethods = this.availableTestMethods;
                 const url = new URL(window.location)
                 url.searchParams.set('package', this.package);

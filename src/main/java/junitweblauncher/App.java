@@ -19,7 +19,15 @@ public class App {
         } catch (Exception e) {
             log.warn("Port number is not provided, default random");
         }
-        vertx.deployVerticle(WebVerticle.class, new DeploymentOptions().setInstances(1).setConfig(new JsonObject(Map.of("port", port))));
+        log.info("Port:{}", port);
+        String pkg = "example";
+        try {
+            pkg = args[1];
+        } catch (Exception e) {
+            log.warn("Package is not provided, default 'example'");
+        }
+        log.info("Test case package:{}", pkg);
+        vertx.deployVerticle(WebVerticle.class, new DeploymentOptions().setInstances(1).setConfig(new JsonObject(Map.of("port", port, "pkg", pkg))));
         new SysOutToEventBus(vertx);
     }
 

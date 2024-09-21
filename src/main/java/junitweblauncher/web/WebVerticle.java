@@ -48,13 +48,15 @@ public class WebVerticle extends AbstractVerticle {
     }
 
     private void listTestMethods(io.vertx.ext.web.RoutingContext routingContext) {
-        // get the package name
-        List<String> packageName = routingContext.queryParam("package");
-        List<String> listType = routingContext.queryParam("listType");
-        log.info("listTestMethods: package={}", packageName);
-        List<LauncherAdapter.TestItem> testItems = new LauncherAdapterImpl().listTestItems(!packageName.isEmpty() ? packageName.getFirst() : "", !listType.isEmpty() ? listType.getFirst() : "classes");
+        List<String> packageParam = routingContext.queryParam("package");
+        String pkg = packageParam.isEmpty() ? config().getString("pkg") : packageParam.getFirst();
+
+        List<String> listTypeParam = routingContext.queryParam("listType");
+        String listType = listTypeParam.isEmpty() ? "class" : listTypeParam.getFirst();
+
+        List<LauncherAdapter.TestItem> testItems = new LauncherAdapterImpl().listTestItems(pkg, listType);
         routingContext.response().putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(testItems));
+                .end(Json.encodePrettily(Map.of("package",pkg, "availableTestItems", testItems)));
     }
 
     private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {

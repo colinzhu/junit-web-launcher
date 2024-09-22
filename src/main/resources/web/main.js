@@ -30,7 +30,7 @@ document.addEventListener('alpine:init', () => {
                     requestUrl = 'api/list-test-methods?package=' + this.package + '&listType=' + this.listType;
                 }
                 const resp = await (await fetch(requestUrl)).json();
-                this.availableTestMethods = resp.availableTestItems;
+                this.availableTestMethods = resp.availableTestItems.sort((a, b) => a.fullyQualifiedMethodName.localeCompare(b.fullyQualifiedMethodName)); // sort by fullyQualifiedMethodName;
                 this.package = resp.package; // get package from response
                 console.log("this.availableTestMethods", this.availableTestMethods)
                 this.availableFilteredMethods = this.availableTestMethods;
@@ -57,7 +57,8 @@ document.addEventListener('alpine:init', () => {
                     })
                 })
                 this.report = await response.json();
-                // for each items in report.runReportItems, add a 'hidden' property and set to true if the 'exception' property is available
+                this.report.runReportItems.sort((a, b) => a.testItem.fullyQualifiedMethodName.localeCompare(b.testItem.fullyQualifiedMethodName));
+                // for each item in report.runReportItems, add a 'hidden' property and set to true if the 'exception' property is available
                 this.report.runReportItems.forEach(item => item['hidden'] = item['exception'] != null);
                 console.log(this.report)
                 this.isRunning = false;
@@ -106,12 +107,12 @@ document.addEventListener('alpine:init', () => {
         },
 
         filterAvailableTestMethods() {
-            this.availableFilteredMethods = this.search(this.availableTestMethods, this.availableFilterKeyword);
+            this.availableFilteredMethods = this.search(this.availableTestMethods, this.availableFilterKeyword).sort((a, b) => a.fullyQualifiedMethodName.localeCompare(b.fullyQualifiedMethodName));
             this.availableCheckedIds = [];
         },
 
         filterSelectedTestMethods() {
-            this.selectedFilteredMethods = this.search(this.selectedTestMethods, this.selectedFilterKeyword);
+            this.selectedFilteredMethods = this.search(this.selectedTestMethods, this.selectedFilterKeyword).sort((a, b) => a.fullyQualifiedMethodName.localeCompare(b.fullyQualifiedMethodName));
             this.selectedCheckedIds = [];
         },
 

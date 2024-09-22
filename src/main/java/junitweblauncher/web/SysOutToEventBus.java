@@ -39,7 +39,10 @@ public class SysOutToEventBus {
             public void write(int b) throws IOException {
                 if (b == '\n') {
                     // Convert the byte array into a string and queue the message
-                    messageQueue.offer(byteArrayStream.toString());
+                    boolean offered = messageQueue.offer(byteArrayStream.toString());
+                    if (!offered) {
+                        System.err.println("Message queue is full. Dropping message.");
+                    }
                     byteArrayStream.reset();  // Clear the buffer
                 } else {
                     byteArrayStream.write(b);  // Buffer the log message

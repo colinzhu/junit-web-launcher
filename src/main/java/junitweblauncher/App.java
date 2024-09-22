@@ -20,6 +20,7 @@ public class App {
             log.warn("Port number is not provided, default random");
         }
         log.info("Port:{}", port);
+
         String pkg = "example";
         try {
             pkg = args[1];
@@ -27,7 +28,16 @@ public class App {
             log.warn("Package is not provided, default 'example'");
         }
         log.info("Test case package:{}", pkg);
-        vertx.deployVerticle(WebVerticle.class, new DeploymentOptions().setInstances(1).setConfig(new JsonObject(Map.of("port", port, "pkg", pkg))));
+
+        int parallelSize = 1;
+        try {
+            parallelSize = Integer.parseInt(args[2]);
+        } catch (Exception e) {
+            log.warn("Parallel run size is not provided, default 1, no parallel run");
+        }
+        log.info("Parallel run size:{}", parallelSize);
+
+        vertx.deployVerticle(WebVerticle.class, new DeploymentOptions().setInstances(parallelSize).setConfig(new JsonObject(Map.of("port", port, "pkg", pkg))));
         new SysOutToEventBus(vertx);
     }
 

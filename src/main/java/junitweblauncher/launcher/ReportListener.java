@@ -45,7 +45,7 @@ class ReportListener implements TestExecutionListener {
 
         // print all items status
         String allItemsStatusStr = runReportItems.stream().map(
-                item -> "[%s][%s][%s][%s][%s][%s]".formatted(item.getTestItem().className(), item.getTestItem().classDisplayName(), item.getTestItem().methodName(), item.getTestItem().methodDisplayName(), item.getStatus(), item.getReason())
+                item -> "[%s][%s][%s][%s][%s][%s][%s]".formatted(item.getTestItem().className(), item.getTestItem().classDisplayName(), item.getTestItem().methodName(), item.getTestItem().methodDisplayName(), item.getStatus(), (item.getEndTime() - item.getStartTime()) + "ms", item.getReason())
                         .replace("\n", ".")
         ).collect(Collectors.joining("\n"));
 

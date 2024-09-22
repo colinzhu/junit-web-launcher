@@ -133,7 +133,7 @@
     </div>
     <template x-if="report" >
         <article x-data="{ show: false }"  x-init="$nextTick(() => { show = true })"  x-show="show" x-transition.duration.500ms >
-            <header><strong>Report</strong></header>
+            <header><strong>Report</strong> <a x-bind:href="'./log/' + report.runId + '.log'" x-text="report.runId + '.log'" target="_blank"></a></header>
             <table class="striped">
                 <thead>
                 <tr>
@@ -165,7 +165,6 @@
                     </tbody>
                 </template>
             </table>
-            <div><a x-bind:href="'./log/' + report.runId + '.log'" x-text="report.runId + '.log'" target="_blank"></a></div>
             <pre x-text="report ? report.summary : ''" style="background-color:transparent"></pre>
         </article>
     </template>

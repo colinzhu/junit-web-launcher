@@ -35,7 +35,7 @@
             max-width: 1000px;
         }
         :root {
-            --pico-font-size: 100%;
+            --pico-font-size: 90%;
         }
     </style>
 </head>
@@ -111,17 +111,17 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <template x-for="(item, index) in selectedFilteredMethods">
-                        <tr>
-                            <td x-show="isEditMode">
-                                <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
-                            </td>
-                            <td x-text="item.className"></td>
-                            <td x-html="item.classDisplayName.replace(/\n/g, '<br/>')"></td>
-                            <td x-show="'methods' == listType" x-text="item.methodName"></td>
-                            <td x-show="'methods' == listType" x-text="item.methodDisplayName"></td>
-                        </tr>
-                    </template>
+                        <template x-for="(item, index) in selectedFilteredMethods">
+                            <tr>
+                                <td x-show="isEditMode">
+                                    <input type="checkbox" x-model="selectedCheckedIds" x-bind:value="item.fullyQualifiedMethodName"/>
+                                </td>
+                                <td x-text="item.className"></td>
+                                <td x-html="item.classDisplayName.replace(/\n/g, '<br/>')"></td>
+                                <td x-show="'methods' == listType" x-text="item.methodName"></td>
+                                <td x-show="'methods' == listType" x-text="item.methodDisplayName"></td>
+                            </tr>
+                        </template>
                     </tbody>
                 </table>
             </form>
@@ -142,25 +142,24 @@
                     <th>reason</th>
                 </tr>
                 </thead>
-
-                    <template x-for="(item, index) in report.runReportItems">
-                        <tbody>
-                            <tr>
-                                <td x-text="item.testItem.className"></td>
-                                <td x-html="item.testItem.classDisplayName.replace(/\n/g, '<br/>')"></td>
-                                <td x-text="item.testItem.methodName"></td>
-                                <td x-text="item.testItem.methodDisplayName"></td>
-                                <td x-text="item.endTime - item.startTime"></td>
-                                <td x-html="item.status"></td>
-                                <td><span x-text="item.reason" x-show="!item.exception" ></span><a x-show="item.exception" x-text="item.reason" @click.prevent="item.hidden = !item.hidden" href="#"></a></td>
+                <template x-for="(item, index) in report.runReportItems">
+                    <tbody>
+                        <tr>
+                            <td x-text="item.testItem.className"></td>
+                            <td x-html="item.testItem.classDisplayName.replace(/\n/g, '<br/>')"></td>
+                            <td x-text="item.testItem.methodName"></td>
+                            <td x-text="item.testItem.methodDisplayName"></td>
+                            <td x-text="item.endTime - item.startTime"></td>
+                            <td x-html="item.status"></td>
+                            <td><span x-text="item.reason" x-show="!item.exception" ></span><a x-show="item.exception" x-text="item.reason" @click.prevent="item.hidden = !item.hidden" href="#"></a></td>
+                        </tr>
+                        <template x-if="item.exception">
+                            <tr x-show="!item.hidden">
+                                <td colspan="5"><pre x-text="item.stackTrace" style="background-color:transparent"></pre></td>
                             </tr>
-                            <template x-if="item.exception">
-                                <tr x-show="!item.hidden">
-                                    <td colspan="5"><pre x-text="item.stackTrace" style="background-color:transparent" /></td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </template>
+                        </template>
+                    </tbody>
+                </template>
             </table>
             <div><a x-bind:href="'./log/' + report.runId + '.log'" x-text="report.runId + '.log'" target="_blank"></a></div>
             <pre x-text="report ? report.summary : ''" style="background-color:transparent"></pre>
@@ -168,7 +167,8 @@
     </template>
 </div>
 
-<div style="padding:1rem;font-size:1rem">
+<div style="padding:0 1rem;font-size:1rem">
+    <div style="text-align:right"><a href="#" onclick="clearMessages();return false" class="secondary">Clear Log Messages</a></div>
     <pre id="messages" style="white-space:pre-wrap"></pre>
 </div>
 </body>

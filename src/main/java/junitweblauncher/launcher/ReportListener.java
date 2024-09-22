@@ -55,7 +55,7 @@ class ReportListener implements TestExecutionListener {
 
     @Override
     public void testPlanExecutionStarted(TestPlan testPlan) {
-        System.out.println("\r\n");
+        System.out.println();
         runId = System.getProperty("runId");
         log.info("testPlan execution started. runId:{}", runId);
         this.testPlan = testPlan;

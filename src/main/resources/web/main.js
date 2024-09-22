@@ -57,6 +57,8 @@ document.addEventListener('alpine:init', () => {
                     })
                 })
                 this.report = await response.json();
+                // for each items in report.runReportItems, add a 'hidden' property and set to true if the 'exception' property is available
+                this.report.runReportItems.forEach(item => item['hidden'] = item['exception'] != null);
                 console.log(this.report)
                 this.isRunning = false;
             } catch (err) {

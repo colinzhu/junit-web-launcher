@@ -21,6 +21,7 @@ import java.util.Map;
 public class WebVerticle extends AbstractVerticle {
     private static final String EVENT_ADDRESS = "console_messages_created";
     LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
+
     @Override
     public void start() {
         startHttpServer();
@@ -56,7 +57,7 @@ public class WebVerticle extends AbstractVerticle {
 
         List<LauncherAdapter.TestItem> testItems = new LauncherAdapterImpl().listTestItems(pkg, listType);
         routingContext.response().putHeader("content-type", "application/json")
-                .end(Json.encodePrettily(Map.of("package",pkg, "availableTestItems", testItems)));
+                .end(Json.encodePrettily(Map.of("package", pkg, "availableTestItems", testItems)));
     }
 
     private void runTestMethods(io.vertx.ext.web.RoutingContext routingContext) {

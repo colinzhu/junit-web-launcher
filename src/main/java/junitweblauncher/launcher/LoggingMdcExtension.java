@@ -28,6 +28,5 @@ public class LoggingMdcExtension implements BeforeTestExecutionCallback, AfterTe
         MDC.remove("testClass");
         MDC.remove("testMethod");
         MDC.remove("testDisplayName");
-        MDC.remove("runId");
     }
 }

@@ -22,6 +22,7 @@ public interface LauncherAdapter {
         private long startTime;
         private long endTime;
         private String status;
+        private String reason;
         private Throwable exception;
         private String stackTrace;
     }

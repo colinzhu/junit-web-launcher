@@ -10,10 +10,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class SysOutToEventBus {
 
+    private static final String EVENT_ADDRESS = "console_messages_created";
     private final BlockingQueue<String> messageQueue = new LinkedBlockingQueue<>();
     private final Vertx vertx;
-
-    private static final String EVENT_ADDRESS = "console_messages_created";
 
     public SysOutToEventBus(Vertx vertx) {
         this.vertx = vertx;

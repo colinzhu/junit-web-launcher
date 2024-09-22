@@ -13,37 +13,60 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static junitweblauncher.launcher.TestUtils.testIdentifierToTestMethod;
 
 @Slf4j
 class ReportListener implements TestExecutionListener {
 
     private final SummaryGeneratingListener summaryGeneratingListener;
 
-    @Getter
-    private Map<String, LauncherAdapter.RunReportItem> runTestItems;
+    private Map<String, LauncherAdapter.RunReportItem> reportItemMap;
     @Getter
     private String runId;
-    @Getter
     private TestExecutionSummary summary;
+    private List<LauncherAdapter.RunReportItem> runReportItems;
 
     public ReportListener() {
         this.summaryGeneratingListener = new SummaryGeneratingListener();
     }
 
+    private void printToLog() {
+        summary.getFailures().forEach(failure -> {
+            LauncherAdapter.TestItem testItem = testIdentifierToTestMethod(null, failure.getTestIdentifier());
+            log.error("[{}][{}][{}] Failed:", testItem.className(), testItem.methodName(), testItem.methodDisplayName(), failure.getException());
+        });
+
+        log.info("\n{}", getSummaryString());
+    }
+
+    private String getSummaryString() {
+        StringWriter stringWriter = new StringWriter();
+        summary.printTo(new PrintWriter(stringWriter));
+        return stringWriter.toString();
+    }
+
+    LauncherAdapter.RunReport getRunReport() {
+        return new LauncherAdapter.RunReport(runId, getSummaryString(), runReportItems);
+    }
+
     @Override
     public void testPlanExecutionStarted(TestPlan testPlan) {
         System.out.println("\r\n");
-        log.info("testPlan execution started");
-        summaryGeneratingListener.testPlanExecutionStarted(testPlan);
-        runTestItems = new HashMap<>();
         runId = System.getProperty("runId");
+        log.info("testPlan execution started. runId:{}", runId);
+        summaryGeneratingListener.testPlanExecutionStarted(testPlan);
+        reportItemMap = new HashMap<>();
     }
 
     @Override
     public void testPlanExecutionFinished(TestPlan testPlan) {
         summaryGeneratingListener.testPlanExecutionFinished(testPlan);
         this.summary = summaryGeneratingListener.getSummary();
+        this.runReportItems = reportItemMap.values().stream().toList();
+        printToLog();
         log.info("testPlan execution finished");
     }
 
@@ -53,8 +76,14 @@ class ReportListener implements TestExecutionListener {
     }
 
     @Override
-    public void executionSkipped(TestIdentifier testIdentifier, String reason) {
-        summaryGeneratingListener.executionSkipped(testIdentifier, reason);
+    public void executionSkipped(TestIdentifier id, String reason) {
+        if (id.isTest()) {
+            long current = System.currentTimeMillis();
+            LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(TestUtils.getTestClass(id), TestUtils.getInvocationOrMethodName(id),
+                    current, current, "SKIPPED", reason, null, null);
+            reportItemMap.put(id.getUniqueId(), runReportItem);
+        }
+        summaryGeneratingListener.executionSkipped(id, reason);
     }
 
     @Override
@@ -62,8 +91,8 @@ class ReportListener implements TestExecutionListener {
         summaryGeneratingListener.executionStarted(id);
         if (id.isTest()) {
             LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(TestUtils.getTestClass(id), TestUtils.getInvocationOrMethodName(id),
-                    System.currentTimeMillis(), 0, "STARTED", null, null);
-            runTestItems.put(id.getUniqueId(), runReportItem);
+                    System.currentTimeMillis(), 0, "STARTED", null, null, null);
+            reportItemMap.put(id.getUniqueId(), runReportItem);
         }
     }
 
@@ -71,9 +100,10 @@ class ReportListener implements TestExecutionListener {
     public void executionFinished(TestIdentifier id, TestExecutionResult testExecutionResult) {
         summaryGeneratingListener.executionFinished(id, testExecutionResult);
         if (id.isTest()) {
-            LauncherAdapter.RunReportItem runReportItem = runTestItems.get(id.getUniqueId());
+            LauncherAdapter.RunReportItem runReportItem = reportItemMap.get(id.getUniqueId());
             runReportItem.setEndTime(System.currentTimeMillis());
             runReportItem.setStatus(testExecutionResult.getStatus().name());
+            runReportItem.setReason(testExecutionResult.getThrowable().map(Throwable::getMessage).orElse(null));
             runReportItem.setException(testExecutionResult.getThrowable().orElse(null));
             runReportItem.setStackTrace(testExecutionResult.getThrowable().map(e -> {
                 StringWriter sw = new StringWriter();

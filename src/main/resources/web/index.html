@@ -127,7 +127,7 @@
             </form>
         </article>
     </div>
-    <template x-if="report">
+    <template x-if="report" >
         <article>
             <header><strong>Report</strong></header>
             <table class="striped">
@@ -148,16 +148,17 @@
                                 <td x-text="item.methodName"></td>
                                 <td x-text="item.endTime - item.startTime"></td>
                                 <td x-html="item.status"></td>
-                                <td x-text="item.exception ? item.exception.message : ''"></td>
+                                <td><span x-text="item.reason" x-show="!item.exception" ></span><a x-show="item.exception" x-text="item.reason" @click.prevent="item.hidden = !item.hidden" href="#"></a></td>
                             </tr>
                             <template x-if="item.exception">
-                                <tr>
+                                <tr x-show="!item.hidden">
                                     <td colspan="5"><pre x-text="item.stackTrace" style="background-color:transparent" /></td>
                                 </tr>
                             </template>
                         </tbody>
                     </template>
             </table>
+            <div><a x-bind:href="'./log/' + report.runId + '.log'" x-text="report.runId + '.log'" target="_blank"></a></div>
             <pre x-text="report ? report.summary : ''" style="background-color:transparent"></pre>
         </article>
     </template>

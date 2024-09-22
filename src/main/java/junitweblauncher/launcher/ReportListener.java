@@ -54,9 +54,22 @@ class ReportListener implements TestExecutionListener {
     }
 
     private String getSummaryString() {
-        StringWriter stringWriter = new StringWriter();
-        summary.printTo(new PrintWriter(stringWriter));
-        return stringWriter.toString();
+        return String.format("%nTest run finished after %d ms "
+                        + "[%5d tests found ]"
+                        + "[%5d tests skipped ]"
+                        + "[%5d tests started ]"
+                        + "[%5d tests aborted ]"
+                        + "[%5d tests successful ]"
+                        + "[%5d tests failed ]",
+
+                summary.getTimeFinished() - summary.getTimeStarted(),
+
+                summary.getTestsFoundCount(),
+                summary.getTestsSkippedCount(),
+                summary.getTestsStartedCount(),
+                summary.getTestsAbortedCount(),
+                summary.getTestsSucceededCount(),
+                summary.getTestsFailedCount());
     }
 
     LauncherAdapter.RunReport getRunReport() {

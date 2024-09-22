@@ -1,6 +1,8 @@
 # junit-web-launcher
 To launch JUnit tests in a browser
 
+![image](https://github.com/colinzhu/resources/blob/master/junit-web-launcher/screenshot-1.png?raw=true)
+
 ## Feature
 - [x] Launch JUnit tests in a browser
 - [x] Report in a table

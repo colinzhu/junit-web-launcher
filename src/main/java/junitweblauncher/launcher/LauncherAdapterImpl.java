@@ -50,7 +50,7 @@ public class LauncherAdapterImpl implements LauncherAdapter {
     private static boolean isClassContainer(TestIdentifier child) {
         return child.getType() == TestDescriptor.Type.CONTAINER
                 && child.getUniqueIdObject().getSegments().stream().noneMatch(s -> s.getType().equals("test-template"))
-                && child.getUniqueIdObject().getSegments().stream().anyMatch(s -> s.getType().equals("class"));
+                && child.getUniqueIdObject().getSegments().stream().anyMatch(s -> s.getType().equals("class") || s.getType().equals("runner")); // junit test class type is 'runner'
     }
 
     private static TestItem testIdentifierToTestClass(TestIdentifier testId) {

@@ -75,11 +75,11 @@ class ReportListener implements TestExecutionListener {
 
     @Override
     public void testPlanExecutionFinished(TestPlan testPlan) {
+        log.info("testPlan execution finished");
         summaryGeneratingListener.testPlanExecutionFinished(testPlan);
         this.summary = summaryGeneratingListener.getSummary();
         this.runReportItems = reportItemMap.values().stream().toList();
         printToLog();
-        log.info("testPlan execution finished");
     }
 
     @Override

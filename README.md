@@ -3,7 +3,7 @@ Welcome to the JUnit Web Launcher! This project provides a simple way to run JUn
 
 ![image](https://github.com/colinzhu/resources/blob/master/junit-web-launcher/screenshot-1.png?raw=true)
 
-## Feature
+## Features
 - [x] Run JUnit tests directly from a web browser
 - [x] View the running log in real-time
 - [x] Lightweight and easy to set up
@@ -19,7 +19,7 @@ Welcome to the JUnit Web Launcher! This project provides a simple way to run JUn
 - Clone the repository
 - Build the source with ```mvn package -Dmaven.test.skip```
 
-## Try with the embedded example
+### Try with the embedded example
 - Load the source into your IDE, then run ```Example.main()``` in the test folder
 - Open http://localhost:8080 in your browser
 

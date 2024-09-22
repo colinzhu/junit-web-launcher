@@ -90,7 +90,7 @@
                 </table>
             </form>
         </article>
-        <article x-show="selectedTestMethods.length > 0" x-transition.duration.1000ms >
+        <article x-show="selectedTestMethods.length > 0" x-transition.duration.500ms >
             <header><strong>Selected Test Classes / Methods: <span x-text="selectedTestMethods.length"></span></strong></header>
             <form>
                 <fieldset class="grid">
@@ -128,7 +128,7 @@
         </article>
     </div>
     <template x-if="report" >
-        <article>
+        <article x-data="{ show: false }"  x-init="$nextTick(() => { show = true })"  x-show="show" x-transition.duration.500ms >
             <header><strong>Report</strong></header>
             <table class="striped">
                 <thead>
@@ -154,8 +154,8 @@
                             <td><span x-text="item.reason" x-show="!item.exception" ></span><a x-show="item.exception" x-text="item.reason" @click.prevent="item.hidden = !item.hidden" href="#"></a></td>
                         </tr>
                         <template x-if="item.exception">
-                            <tr x-show="!item.hidden">
-                                <td colspan="5"><pre x-text="item.stackTrace" style="background-color:transparent"></pre></td>
+                            <tr x-show="!item.hidden" x-transition.duration.200ms >
+                                <td colspan="7"><pre x-text="item.stackTrace" style="background-color:transparent"></pre></td>
                             </tr>
                         </template>
                     </tbody>

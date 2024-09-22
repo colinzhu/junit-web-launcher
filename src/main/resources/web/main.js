@@ -25,6 +25,7 @@ document.addEventListener('alpine:init', () => {
                 const urlSearchParams = new URLSearchParams(window.location.search);
                 this.package = urlSearchParams.get('package') || null;
                 this.listType = urlSearchParams.get('listType') || 'classes'; // 'classes' is default
+                console.log("listType", this.listType)
                 var requestUrl = 'api/list-test-methods?listType=' + this.listType;
                 if (this.package) {
                     requestUrl = 'api/list-test-methods?package=' + this.package + '&listType=' + this.listType;
@@ -60,7 +61,7 @@ document.addEventListener('alpine:init', () => {
                 this.report.runReportItems.sort((a, b) => a.testItem.fullyQualifiedMethodName.localeCompare(b.testItem.fullyQualifiedMethodName));
                 // for each item in report.runReportItems, add a 'hidden' property and set to true if the 'exception' property is available
                 this.report.runReportItems.forEach(item => item['hidden'] = item['exception'] != null);
-                console.log(this.report)
+                console.log("this.report", this.report)
                 this.isRunning = false;
             } catch (err) {
                 console.log("error running test methods: " + err)
@@ -118,7 +119,7 @@ document.addEventListener('alpine:init', () => {
 
         search(fullArray, q) {
             const keywords = q.trim().split(/\s+/);
-            console.log(keywords);
+            console.log("keywords", keywords);
             return fullArray.filter(item => keywords.every(keyword => item['fullyQualifiedMethodName'].toLowerCase().indexOf(keyword.toLowerCase()) >= 0))
         },
 
@@ -142,13 +143,3 @@ document.addEventListener('alpine:init', () => {
     }))
 
 })
-
-//            if (checkedItems.length > 0) {
-//                // add the checkedItems to the selectedTestMethods array, exclude those already in the selectedTestMethods array
-//                this.selectedTestMethods = this.selectedTestMethods.filter(stm => !checkedItems.includes(stm))
-//                checkedItems.forEach(item => {
-//                    this.selectedTestMethods.push(item);
-//                    // remove the checkedItems from the availableTestMethods array
-//                    this.availableTestMethods = this.availableTestMethods.filter(atm => atm['fullyQualifiedMethodName'] !== item['fullyQualifiedMethodName'])
-//                })
-//            }

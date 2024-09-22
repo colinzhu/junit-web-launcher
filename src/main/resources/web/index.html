@@ -40,7 +40,7 @@
     </style>
 </head>
 
-<body>
+<body x-data="testMethodData">
 
 <div class="container-fluid">
     <nav>
@@ -50,12 +50,16 @@
             </li>
         </ul>
         <ul>
-            <li><a role="button" href="./log/" target="_blank">View Log Files</a></li>
+            <li>
+                <a x-show="'classes' == listType" role="button" x-bind:href="window.location.href.replace('listType=classes','listType=methods')">Show Test Methods</a>
+                <a x-show="'methods' == listType" role="button" x-bind:href="window.location.href.replace('listType=methods','listType=classes')">Show Test Classes</a>
+                <a role="button" href="./log/" target="_blank">View Log Files</a>
+            </li>
         </ul>
     </nav>
 </div>
 
-<div x-data="testMethodData" @runTestMethods="runTestMethods">
+<div @runTestMethods="runTestMethods">
     <div class="grid">
         <article>
             <header><strong>Available Test Classes / Methods</strong></header>

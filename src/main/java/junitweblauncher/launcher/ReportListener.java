@@ -23,11 +23,12 @@ class ReportListener implements TestExecutionListener {
 
     private final SummaryGeneratingListener summaryGeneratingListener;
 
-    private Map<String, LauncherAdapter.RunReportItem> reportItemMap;
     @Getter
     private String runId;
+    private Map<String, LauncherAdapter.RunReportItem> reportItemMap;
     private TestExecutionSummary summary;
     private List<LauncherAdapter.RunReportItem> runReportItems;
+    private TestPlan testPlan;
 
     public ReportListener() {
         this.summaryGeneratingListener = new SummaryGeneratingListener();
@@ -57,6 +58,7 @@ class ReportListener implements TestExecutionListener {
         System.out.println("\r\n");
         runId = System.getProperty("runId");
         log.info("testPlan execution started. runId:{}", runId);
+        this.testPlan = testPlan;
         summaryGeneratingListener.testPlanExecutionStarted(testPlan);
         reportItemMap = new HashMap<>();
     }
@@ -79,7 +81,9 @@ class ReportListener implements TestExecutionListener {
     public void executionSkipped(TestIdentifier id, String reason) {
         if (id.isTest()) {
             long current = System.currentTimeMillis();
-            LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(TestUtils.getTestClass(id), TestUtils.getInvocationOrMethodName(id),
+            String parentDisplayName = testPlan.getParent(id).map(TestIdentifier::getDisplayName).orElse(null);
+            LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(
+                    TestUtils.testIdentifierToTestMethod(parentDisplayName,id),
                     current, current, "SKIPPED", reason, null, null);
             reportItemMap.put(id.getUniqueId(), runReportItem);
         }
@@ -90,7 +94,9 @@ class ReportListener implements TestExecutionListener {
     public void executionStarted(TestIdentifier id) {
         summaryGeneratingListener.executionStarted(id);
         if (id.isTest()) {
-            LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(TestUtils.getTestClass(id), TestUtils.getInvocationOrMethodName(id),
+            String parentDisplayName = testPlan.getParent(id).map(TestIdentifier::getDisplayName).orElse(null);
+            LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(
+                    TestUtils.testIdentifierToTestMethod(parentDisplayName,id),
                     System.currentTimeMillis(), 0, "STARTED", null, null, null);
             reportItemMap.put(id.getUniqueId(), runReportItem);
         }

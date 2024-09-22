@@ -134,18 +134,22 @@
                 <thead>
                 <tr>
                     <th>className</th>
+                    <th>classDisplayName</th>
                     <th>methodName</th>
+                    <th>methodDisplayName</th>
                     <th>time (ms)</th>
                     <th>status</th>
-                    <th>exception</th>
+                    <th>reason</th>
                 </tr>
                 </thead>
 
                     <template x-for="(item, index) in report.runReportItems">
                         <tbody>
                             <tr>
-                                <td x-text="item.className"></td>
-                                <td x-text="item.methodName"></td>
+                                <td x-text="item.testItem.className"></td>
+                                <td x-html="item.testItem.classDisplayName.replace(/\n/g, '<br/>')"></td>
+                                <td x-text="item.testItem.methodName"></td>
+                                <td x-text="item.testItem.methodDisplayName"></td>
                                 <td x-text="item.endTime - item.startTime"></td>
                                 <td x-html="item.status"></td>
                                 <td><span x-text="item.reason" x-show="!item.exception" ></span><a x-show="item.exception" x-text="item.reason" @click.prevent="item.hidden = !item.hidden" href="#"></a></td>

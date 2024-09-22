@@ -15,7 +15,9 @@ import org.junit.jupiter.api.Test;
 public class TestClassB {
     @Test
     @DisplayName("****TestB_method1****")
+    @SneakyThrows
     public void testB_method1() {
+        Thread.sleep(1200);
         log.info("this is TestClassB.testB_method1");
         Assertions.assertTrue(true);
     }
@@ -23,7 +25,7 @@ public class TestClassB {
     @Test
     @SneakyThrows
     public void testB_method2() {
-        Thread.sleep(2123);
+        Thread.sleep(1000);
         log.info("this is TestClassB.testB_method2");
         Assertions.assertTrue(true);
     }

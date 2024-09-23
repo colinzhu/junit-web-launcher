@@ -45,7 +45,7 @@ public class WebVerticle extends AbstractVerticle {
 
         server.requestHandler(router).listen(config().getInteger("port"))
                 .onSuccess(httpServer -> log.info(logMsg.replace("#{port}", String.valueOf(httpServer.actualPort())), Integer.toHexString(this.hashCode())))
-                .onFailure(err -> log.error("failed to start task queue support.", err));
+                .onFailure(err -> log.error("failed to start web server.", err));
     }
 
     private void listTestMethods(io.vertx.ext.web.RoutingContext routingContext) {

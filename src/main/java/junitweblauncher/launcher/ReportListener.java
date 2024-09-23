@@ -12,9 +12,9 @@ import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import static junitweblauncher.launcher.TestUtils.testIdentifierToTestMethod;
@@ -83,7 +83,7 @@ class ReportListener implements TestExecutionListener {
         log.info("testPlan execution started. runId:{}", runId);
         this.testPlan = testPlan;
         summaryGeneratingListener.testPlanExecutionStarted(testPlan);
-        reportItemMap = new HashMap<>();
+        reportItemMap = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -117,6 +117,7 @@ class ReportListener implements TestExecutionListener {
     public void executionStarted(TestIdentifier id) {
         summaryGeneratingListener.executionStarted(id);
         if (id.isTest()) {
+            log.info("[{}][{}] test execution started", id.getDisplayName(), id.getUniqueId());
             String parentDisplayName = testPlan.getParent(id).map(TestIdentifier::getDisplayName).orElse(null);
             LauncherAdapter.RunReportItem runReportItem = new LauncherAdapter.RunReportItem(
                     TestUtils.testIdentifierToTestMethod(parentDisplayName, id),

@@ -2,6 +2,7 @@ package junitweblauncher.launcher;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.launcher.TestExecutionListener;
@@ -10,18 +11,23 @@ import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import io.qameta.allure.DummyReportGenerator;
 
 import static junitweblauncher.launcher.TestUtils.testIdentifierToTestMethod;
 
 @Slf4j
 class ReportListener implements TestExecutionListener {
 
+    public static final String FOLDER_ALLURE_RESULTS = "allure-results";
+    public static final String FOLDER_ALLURE_REPORTS = "allure-reports";
     private final SummaryGeneratingListener summaryGeneratingListener;
 
     @Getter
@@ -80,6 +86,9 @@ class ReportListener implements TestExecutionListener {
     public void testPlanExecutionStarted(TestPlan testPlan) {
         System.out.println();
         runId = System.getProperty("runId");
+        if (!FileUtils.deleteQuietly(new File(FOLDER_ALLURE_RESULTS))) {
+            log.warn("Error deleting directory");
+        }
         log.info("testPlan execution started. runId:{}", runId);
         this.testPlan = testPlan;
         summaryGeneratingListener.testPlanExecutionStarted(testPlan);
@@ -93,6 +102,12 @@ class ReportListener implements TestExecutionListener {
         this.summary = summaryGeneratingListener.getSummary();
         this.runReportItems = reportItemMap.values().stream().toList();
         printToLog();
+        try {
+            DummyReportGenerator.main(FOLDER_ALLURE_RESULTS, FOLDER_ALLURE_REPORTS);
+            log.info("Allure report generated to {}", FOLDER_ALLURE_REPORTS);
+        } catch (IOException e) {
+            log.info("Error generating allure report", e);
+        }
     }
 
     @Override

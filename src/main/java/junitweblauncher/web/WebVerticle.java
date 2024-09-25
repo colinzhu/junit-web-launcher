@@ -33,6 +33,7 @@ public class WebVerticle extends AbstractVerticle {
 
         Router router = Router.router(vertx);
         router.route("/log/*").handler(StaticHandler.create("./log").setDirectoryListing(true));
+        router.route("/report/*").handler(StaticHandler.create("./allure-reports").setCachingEnabled(false));
         router.route().handler(StaticHandler.create("web"));
         router.route().handler(BodyHandler.create());
         router.route("/api/list-test-methods").handler(this::listTestMethods);

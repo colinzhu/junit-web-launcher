@@ -103,8 +103,9 @@ class ReportListener implements TestExecutionListener {
         this.runReportItems = reportItemMap.values().stream().toList();
         printToLog();
         try {
-            DummyReportGenerator.main(FOLDER_ALLURE_RESULTS, FOLDER_ALLURE_REPORTS);
-            log.info("Allure report generated to {}", FOLDER_ALLURE_REPORTS);
+            String reportFolder = FOLDER_ALLURE_REPORTS + "/" + runId;
+            DummyReportGenerator.main(FOLDER_ALLURE_RESULTS, reportFolder);
+            log.info("Allure report generated to {}", reportFolder);
         } catch (IOException e) {
             log.info("Error generating allure report", e);
         }

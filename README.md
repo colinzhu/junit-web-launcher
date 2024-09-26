@@ -36,3 +36,7 @@ java -cp * junitweblauncher.App 8080 example.package 2
 - Add the junit-web-launcher to your pom.xml
 - Invoke ```junitweblauncher.App.main(new String[]{"8080", "example.package", "2"});```
 - Open http://localhost:8080 in your browser
+
+
+### NOTE
+In order to make allure @Step @Attachment to work, need to add VM option ```-javaagent:xxxxxx\repository\org\aspectj\aspectjweaver\1.9.22.1\aspectjweaver-1.9.22.1.jar``` when running the test

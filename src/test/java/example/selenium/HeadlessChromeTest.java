@@ -3,6 +3,7 @@ package example.selenium;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Step;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,13 +19,14 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+@Slf4j
 public class HeadlessChromeTest {
 
     private WebDriver driver;
 
     @BeforeEach
     public void setUp() {
-        System.setProperty("webdriver.chrome.driver", "/home/colin/dev/chromedriver-linux64/chromedriver");
+        // pls add program argument e.g.: -Dwebdriver.chrome.driver=D:\dev\chromedriver-win64\chromedriver.exe
 
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless"); // Run in headless mode
@@ -39,11 +41,12 @@ public class HeadlessChromeTest {
     @DisplayName("Purpose: able to open bing.com from a browser")
     @SneakyThrows
     public void testPageTitle() {
-        Allure.step("Open URl and verify title" , () -> openUrl("https://cn.bing.com/", "Bing"));
+        openUrl("https://cn.bing.com/", "Bing");
+        step2();
     }
 
-    @Step("Open URL: {0} and verify title: {1}")
-    private void openUrl(String url, String expectedTitle) throws IOException {
+    @Step("Open URL:{0}, Expected title:{1}")
+    public void openUrl(String url, String expectedTitle) throws IOException {
         driver.get(url);
         // Capture screenshot as bytes
         byte[] screenshotBytes = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BYTES);
@@ -52,6 +55,11 @@ public class HeadlessChromeTest {
         }
         String title = driver.getTitle();
         assertEquals(expectedTitle, title);
+    }
+
+    @Step("Step 2")
+    public void step2() {
+        log.info("step2");
     }
 
     @AfterEach

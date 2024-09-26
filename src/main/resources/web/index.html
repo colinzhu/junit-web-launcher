@@ -137,8 +137,8 @@
             <header>
                 <strong style="padding-left:1em">Report</strong>
                 <span style="float:right">
-                <a x-bind:href="'./report/' + report.runId + '/index.html'" x-text="'Report:' + report.runId" target="_blank"></a> &nbsp;
-                <a x-bind:href="'./log/' + report.runId + '.log'" x-text="report.runId + '.log'" target="_blank" style="float:right"></a>
+                <a style="padding:1px 3px" role="button" x-bind:href="'./report/' + report.runId + '/index.html'" x-text="'Report'" target="_blank"></a> &nbsp;
+                <a style="padding:1px 3px" role="button" x-bind:href="'./log/' + report.runId + '.log'" x-text="report.runId + '.log'" target="_blank" style="float:right"></a>
                 </span>
             </header>
             <table class="striped">

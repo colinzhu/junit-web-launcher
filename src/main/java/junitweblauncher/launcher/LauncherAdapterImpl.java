@@ -1,5 +1,6 @@
 package junitweblauncher.launcher;
 
+import junitweblauncher.listener.AllureReportListener;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.discovery.ClassSelector;
@@ -78,6 +79,7 @@ public class LauncherAdapterImpl implements LauncherAdapter {
         return testItems;
     }
 
+    @Override
     public RunReport runTestMethods(List<String> fullyQualifiedNames) {
         MDC.put("runId", System.getProperty("runId")); // make sure the log messages of this thread are logged into the same log file
 
@@ -88,11 +90,11 @@ public class LauncherAdapterImpl implements LauncherAdapter {
                 .selectors(classSelectors)
                 .build();
 
-        ReportListener reportListener = new ReportListener();
+        LauncherReportListener launcherReportListener = new LauncherReportListener();
         Launcher launcher = LauncherFactory.create();
-        launcher.execute(request, reportListener);
+        launcher.execute(request, launcherReportListener, new AllureReportListener(()-> System.getProperty("runId"), null));
 
-        return reportListener.getRunReport();
+        return launcherReportListener.getRunReport();
     }
 
 

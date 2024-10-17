@@ -18,8 +18,6 @@ public interface LauncherAdapter {
     @AllArgsConstructor
     class RunReportItem {
         private TestItem testItem;
-//        private String className;
-//        private String methodName;
         private long startTime;
         private long endTime;
         private String status;

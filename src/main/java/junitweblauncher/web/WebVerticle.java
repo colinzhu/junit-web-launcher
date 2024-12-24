@@ -20,7 +20,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class WebVerticle extends AbstractVerticle {
     private static final String EVENT_ADDRESS = "console_messages_created";
-    LauncherAdapterImpl launcherAdapter = new LauncherAdapterImpl();
+    LauncherAdapter launcherAdapter = new LauncherAdapterImpl();
 
     @Override
     public void start() {
@@ -56,7 +56,7 @@ public class WebVerticle extends AbstractVerticle {
         List<String> listTypeParam = routingContext.queryParam("listType");
         String listType = listTypeParam.isEmpty() ? "class" : listTypeParam.getFirst();
 
-        List<LauncherAdapter.TestItem> testItems = new LauncherAdapterImpl().listTestItems(pkg, listType);
+        List<LauncherAdapter.TestItem> testItems = launcherAdapter.listTestItems(pkg, listType);
         routingContext.response().putHeader("content-type", "application/json")
                 .end(Json.encodePrettily(Map.of("package", pkg, "availableTestItems", testItems)));
     }
